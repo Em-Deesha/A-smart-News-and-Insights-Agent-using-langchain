@@ -169,6 +169,10 @@ def main():
                         <p><strong>Source:</strong> {article.get('source', {}).get('name', 'Unknown')} | 
                         <strong>Published:</strong> {article.get('publishedAt', 'Unknown date')[:10]}</p>
                         <p><strong>Summary:</strong> {article.get('summary', 'No summary available')}</p>
+                        <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            <strong>📝 AI Summary:</strong><br>
+                            {article.get('summary', 'No summary available')}
+                        </div>
                         <p><strong>Sentiment:</strong> 
                         <span class="sentiment-{article.get('sentiment', 'neutral').lower()}">
                             {SENTIMENT_LABELS.get(article.get('sentiment', 'NEUTRAL'), '😐')} 

@@ -14,7 +14,7 @@ class TextProcessorGemini:
         genai.configure(api_key=GEMINI_API_KEY)
         self.model = genai.GenerativeModel('gemini-1.5-flash')
     
-    def summarize_text(self, text: str, max_length: int = 100) -> str:
+    def summarize_text(self, text: str, max_length: int = 200) -> str:
         """
         Summarize text using Gemini API
         
@@ -35,7 +35,7 @@ class TextProcessorGemini:
                 return cleaned_text
             
             prompt = f"""
-            Please provide a concise summary of the following news article in 2-3 sentences (maximum {max_length} characters):
+            Please provide a concise summary of the following news article in 2-3 sentences. Make sure the summary is complete and not cut off:
             
             {cleaned_text}
             
@@ -45,9 +45,23 @@ class TextProcessorGemini:
             response = self.model.generate_content(prompt)
             summary = response.text.strip()
             
-            # Ensure summary is within length limit
+            # Ensure summary is complete and not cut off
             if len(summary) > max_length:
-                summary = summary[:max_length] + "..."
+                # Find the last complete sentence
+                sentences = summary.split('. ')
+                if len(sentences) > 1:
+                    # Keep all complete sentences
+                    complete_sentences = []
+                    current_length = 0
+                    for sentence in sentences:
+                        if current_length + len(sentence) + 2 <= max_length:  # +2 for '. '
+                            complete_sentences.append(sentence)
+                            current_length += len(sentence) + 2
+                        else:
+                            break
+                    summary = '. '.join(complete_sentences) + '.'
+                else:
+                    summary = summary[:max_length-3] + "..."
             
             return summary
             
